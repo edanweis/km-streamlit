@@ -48,17 +48,18 @@ def doSuccess():
     st.balloons()
     st.success('Ready')
 
-@st.cache(allow_output_mutation=True, suppress_st_warning=True)
+@st.cache(hash_funcs={streamlit.secrets.Secrets: id}, suppress_st_warning=True)
 def build(key):
     status_text = st.empty()
     progress_bar = st.progress(0) 
     directory = f'./{key}-embedding'
-    # if 'embeddings' in vars() or 'embeddings' in globals():
+    # if 'embeddings' in vars() or 'e
+    # mbeddings' in globals():
     #     return embeddings
     # else:
     # 
     status_text.text('Mounting S3 file system')
-    fs = s3fs.S3FileSystem(anon=False, key= st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
+    fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
     status_text.text('Copying embeddings')
     # if not os.path.isdir(directory):
