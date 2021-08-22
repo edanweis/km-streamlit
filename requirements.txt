@@ -1,0 +1,8 @@
+streamlit
+txtai==3.1.0
+torchvision
+s3fs
+firebase-admin
+aiobotocore
+botocore
+boto3
