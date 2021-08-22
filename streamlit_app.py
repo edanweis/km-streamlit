@@ -48,7 +48,7 @@ def doSuccess():
     st.balloons()
     st.success('Ready')
 
-@st.cache(hash_funcs={streamlit.secrets.Secrets: id}, suppress_st_warning=True)
+@st.cache(hash_funcs={st.secrets.Secrets: id}, suppress_st_warning=True)
 def build(key):
     status_text = st.empty()
     progress_bar = st.progress(0) 
