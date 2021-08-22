@@ -17,18 +17,18 @@ from PIL import Image
 
 from txtai.embeddings import Embeddings
 
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
+# import firebase_admin
+# from firebase_admin import credentials
+# from firebase_admin import firestore
 
 import s3fs
 
 import boto3
 
-if not firebase_admin._apps:
-    cred = credentials.Certificate('./aspect-km-4e35c3950fe3.json')
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
+# if not firebase_admin._apps:
+#     cred = credentials.Certificate('./aspect-km-4e35c3950fe3.json')
+#     firebase_admin.initialize_app(cred)
+#     db = firestore.client()
 
 
 def images(directory):
@@ -78,22 +78,22 @@ def build(key):
     doSuccess()
     return embeddings
 
-@st.cache(allow_output_mutation=True, hash_funcs={firebase_admin.App: id})
-def db():
-    if not firebase_admin._apps:
-        cred = credentials.Certificate('./aspect-km-4e35c3950fe3.json')
-        firebase_admin.initialize_app(cred)
-    return firestore.client()
+# @st.cache(allow_output_mutation=True, hash_funcs={firebase_admin.App: id})
+# def db():
+#     if not firebase_admin._apps:
+#         cred = credentials.Certificate('./aspect-km-4e35c3950fe3.json')
+#         firebase_admin.initialize_app(cred)
+#     return firestore.client()
 
 
-@st.cache(hash_funcs={firebase_admin.App: id, s3fs.core.S3File: id})
-def firebaseCallback(results, app_state):
-    app_state = get_app_state()
-    if app_state['s']:
-        doc_ref = db().collection(u'streamlit').document(app_state['s'])
-        doc_ref.set({
-            u'results': results
-        }, merge=True)
+# @st.cache(hash_funcs={firebase_admin.App: id, s3fs.core.S3File: id})
+# def firebaseCallback(results, app_state):
+#     app_state = get_app_state()
+#     if app_state['s']:
+#         doc_ref = db().collection(u'streamlit').document(app_state['s'])
+#         doc_ref.set({
+#             u'results': results
+#         }, merge=True)
 
 def get_app_state():
     app_state = st.experimental_get_query_params()
@@ -137,14 +137,10 @@ def app():
     query = st.text_input("")
 
     if query:
-        # images, labels = [] 
-        for result in embeddings.search(query, 5):
+        for result in embeddings.search(query, 10):
             index, _ = result
             st.write(index)
             st.image(generate_presigned_url(f"precedent-images/{Path(index).name}"))
-            # st.image(fs.open(f"s3://aspect-km/precedent-images/{Path(index).name}", "rb"))
-        firebaseCallback({"index": index.info()['name'], "query":query, "_": _, "s": app_state['s'], "embeddings": embeddings_path }, app_state)
-
 
 if __name__ == "__main__":
     app()
