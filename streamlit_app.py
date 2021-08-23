@@ -54,8 +54,8 @@ def doSuccess():
 
 def build(key):
     status_text = st.empty()
-    st.write(st.secrets)
-    st.write(st.secrets.Secrets)
+    # st.write(st.secrets)
+    # st.write(st.secrets.Secrets)
     progress_bar = st.progress(0) 
     directory = f'{key}-embedding'
     # if 'embeddings' in vars() or 'e
