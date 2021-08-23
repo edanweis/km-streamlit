@@ -52,17 +52,29 @@ def doSuccess():
         placeholder.empty()
 
 
+<<<<<<< HEAD
 def build(key):
     status_text = st.empty()
     progress_bar = st.progress(0) 
     directory = f'{key}-embedding'
+=======
+@st.cache(hash_funcs={st.secrets.Secrets: id}, suppress_st_warning=True)
+def build(key):
+    status_text = st.empty()
+    progress_bar = st.progress(0) 
+    directory = f'./{key}-embedding'
+>>>>>>> 6bbc65de2c338c4cd5edb7a5f310dbd70d074e16
     # if 'embeddings' in vars() or 'e
     # mbeddings' in globals():
     #     return embeddings
     # else:
     # 
     status_text.text('Mounting S3 file system')
+<<<<<<< HEAD
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets.aws_access_key_id, secret=st.secrets.aws_secret_access_key)
+=======
+    fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
+>>>>>>> 6bbc65de2c338c4cd5edb7a5f310dbd70d074e16
     progress_bar.progress(20)
     status_text.text('Copying embeddings')
     if not os.path.isdir(directory):
