@@ -51,7 +51,7 @@ def doSuccess():
         placeholder.success('Ready')
         placeholder.empty()
 
-
+@st.cache(suppress_st_warning=True)
 def build(key):
     status_text = st.empty()
     # st.write(st.secrets)
@@ -66,7 +66,7 @@ def build(key):
     status_text.text('Mounting S3 file system')
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
-    status_text.text('Copying embeddings')
+    # status_text.text('Copying embeddings')
     if not os.path.isdir(directory):
         os.makedirs(os.path.dirname(f"./{directory}"), exist_ok=True)
         fs.get(f"s3://aspect-km/{directory}/embeddings", f"./{directory}/embeddings")
