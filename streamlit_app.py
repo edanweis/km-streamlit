@@ -54,6 +54,8 @@ def doSuccess():
 
 def build(key):
     status_text = st.empty()
+    st.write(st.secrets)
+    st.write(st.secrets.Secrets)
     progress_bar = st.progress(0) 
     directory = f'{key}-embedding'
     # if 'embeddings' in vars() or 'e
@@ -62,7 +64,7 @@ def build(key):
     # else:
     # 
     status_text.text('Mounting S3 file system')
-    fs = s3fs.S3FileSystem(anon=False, key=st.secrets.aws_access_key_id, secret=st.secrets.aws_secret_access_key)
+    fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
     status_text.text('Copying embeddings')
     if not os.path.isdir(directory):
@@ -107,8 +109,8 @@ def get_app_state():
 @st.cache(hash_funcs={"_thread.RLock": lambda _: None}, allow_output_mutation=True)
 def generate_presigned_url(object_key, bucket_name='aspect-km', expiry=3600):
     client = boto3.client("s3",region_name='ap-southeast-2',
-                          aws_secret_access_key=st.secrets.aws_secret_access_key,
-                          aws_access_key_id=st.secrets.aws_access_key_id)
+                          aws_secret_access_key=st.secrets["aws_secret_access_key"],
+                          aws_access_key_id=st.secrets["aws_access_key_id"])
     try:
         response = client.generate_presigned_url('get_object',
                           Params={'Bucket': bucket_name,'Key': object_key},
