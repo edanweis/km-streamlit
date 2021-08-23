@@ -51,7 +51,7 @@ def doSuccess():
         placeholder.success('Ready')
         placeholder.empty()
 
-@st.cache(suppress_st_warning=True)
+@st.cache(hash_funcs={"_thread.RLock": lambda _: None}, suppress_st_warning=True)
 def build(key):
     status_text = st.empty()
     # st.write(st.secrets)
