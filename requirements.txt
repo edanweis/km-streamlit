@@ -1,5 +1,5 @@
 streamlit
-txtai==3.1.0
+txtai[similarity]
 torchvision
 s3fs
 firebase-admin

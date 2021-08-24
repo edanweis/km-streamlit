@@ -57,7 +57,7 @@ def build(key):
     # st.write(st.secrets)
     # st.write(st.secrets.Secrets)
     progress_bar = st.progress(0) 
-    directory = f'{key}-embedding'
+    directory = f'{key}-multilingual-embedding'
     # if 'embeddings' in vars() or 'e
     # mbeddings' in globals():
     #     return embeddings
@@ -75,9 +75,15 @@ def build(key):
     progress_bar.progress(60)
     # status_text.text('Downloading CLIP model from Sentence Transformers')
     # clippath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'clip-ViT-B-32')
-    embeddings = Embeddings()
+    
+    embeddings = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
+    embeddings.load(directory)
+
     progress_bar.progress(80)
-    embeddings.load(f"./{directory}")
+    
+    embeddings.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
+    embeddings.model = embeddings.loadVectors()
+
     progress_bar.progress(100)
     progress_bar.empty()
     status_text.text('')
