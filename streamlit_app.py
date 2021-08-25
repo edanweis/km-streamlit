@@ -123,7 +123,7 @@ def app():
     embeddings_path = app_state.get('key', 'precedent-images-textai-multilingual-embedding')
     embeddings = build(embeddings_path)
 
-    # query = st.text_input("")
+    query = st.text_input("")
 
     l = app_state.get('limit',10)
 
