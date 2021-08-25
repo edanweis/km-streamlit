@@ -17,7 +17,6 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-import s3fs
 from google.cloud import secretmanager
 from google.oauth2 import service_account
 
@@ -58,7 +57,7 @@ def db():
     return firestore.client()
 
 
-@st.cache(hash_funcs={firebase_admin.App: id, s3fs.core.S3File: id})
+@st.cache(hash_funcs={firebase_admin.App: id})
 def firebaseCallback(results, app_state):
     app_state = get_app_state()
     if app_state['s']:
