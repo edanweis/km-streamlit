@@ -119,11 +119,13 @@ def app():
     if query:
         cols = st.beta_columns(5)
         cols[0].write()
-        for result in embeddings.search(query, 10):
+        results = embeddings.search(query, 10)
+        for result in results:
             index, _ = result
             st.write(index)
             st.image(generate_presigned_url(f"precedent-images/{Path(index).name}"))
-        firebaseCallback({"query":query, "_": _, "s": app_state.get('s', {}), "embeddings": embeddings_path }, app_state)
+        firebaseCallback(**results,
+         app_state)
         st.write({"query":query, "_": _, "embeddings": embeddings_path, **app_state})
 
 if __name__ == "__main__":
