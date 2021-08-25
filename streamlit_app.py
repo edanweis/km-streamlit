@@ -17,30 +17,18 @@ from PIL import Image
 
 from txtai.embeddings import Embeddings
 
-# import firebase_admin
-# from firebase_admin import credentials
-# from firebase_admin import firestore
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
 import s3fs
 
 import boto3
 
-# if not firebase_admin._apps:
-#     cred = credentials.Certificate('./aspect-km-4e35c3950fe3.json')
-#     firebase_admin.initialize_app(cred)
-#     db = firestore.client()
-
-
-def images(directory):
-    """
-    Generator that loops over each image in a directory.
-
-    Args:
-        directory: directory with images
-    """
-
-    for path in glob.glob(directory + "/*jpg") + glob.glob(directory + "/*png"):
-        yield (path, Image.open(path), None)
+if not firebase_admin._apps:
+    # cred = credentials.Certificate('./aspect-km-4e35c3950fe3.json')
+    firebase_admin.initialize_app(st.secrets["googleserviceaccount"])
+    db = firestore.client()
 
 
 @st.cache(suppress_st_warning=True)
@@ -54,28 +42,17 @@ def doSuccess():
 @st.cache(hash_funcs={"_thread.RLock": lambda _: None}, allow_output_mutation=True, suppress_st_warning=True)
 def build(key):
     status_text = st.empty()
-    # st.write(st.secrets)
-    # st.write(st.secrets.Secrets)
     progress_bar = st.progress(0) 
     directory = f'{key}-multilingual-embedding'
-    # if 'embeddings' in vars() or 'e
-    # mbeddings' in globals():
-    #     return embeddings
-    # else:
-    # 
-    status_text.text('Mounting S3 file system')
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
-    # status_text.text('Copying embeddings')
     if not os.path.isdir(directory):
         os.makedirs(os.path.dirname(f"./{directory}"), exist_ok=True)
         fs.get(f"s3://aspect-km/{directory}/embeddings", f"./{directory}/embeddings")
         fs.get(f"s3://aspect-km/{directory}/config", f"./{directory}/config")
 
     progress_bar.progress(60)
-    # status_text.text('Downloading CLIP model from Sentence Transformers')
-    # clippath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'clip-ViT-B-32')
-    
+        
     embeddings = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
     embeddings.load(directory)
 
@@ -90,22 +67,22 @@ def build(key):
     doSuccess()
     return embeddings
 
-# @st.cache(allow_output_mutation=True, hash_funcs={firebase_admin.App: id})
-# def db():
-#     if not firebase_admin._apps:
-#         cred = credentials.Certificate('./aspect-km-4e35c3950fe3.json')
-#         firebase_admin.initialize_app(cred)
-#     return firestore.client()
+@st.cache(allow_output_mutation=True, hash_funcs={firebase_admin.App: id})
+def db():
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(st.secrets["googleserviceaccount"])
+        firebase_admin.initialize_app(cred)
+    return firestore.client()
 
 
-# @st.cache(hash_funcs={firebase_admin.App: id, s3fs.core.S3File: id})
-# def firebaseCallback(results, app_state):
-#     app_state = get_app_state()
-#     if app_state['s']:
-#         doc_ref = db().collection(u'streamlit').document(app_state['s'])
-#         doc_ref.set({
-#             u'results': results
-#         }, merge=True)
+@st.cache(hash_funcs={firebase_admin.App: id, s3fs.core.S3File: id})
+def firebaseCallback(results, app_state):
+    app_state = get_app_state()
+    if app_state['s']:
+        doc_ref = db().collection(u'streamlit').document(app_state['s'])
+        doc_ref.set({
+            u'results': results
+        }, merge=True)
 
 def get_app_state():
     app_state = st.experimental_get_query_params()
