@@ -125,7 +125,7 @@ def app():
             index, _ = result
             st.write(index)
             st.image(generate_presigned_url(f"precedent-images/{Path(index).name}"))
-        firebaseCallback(list(itertools.chain.from_iterable(results))
+        firebaseCallback(results
 , app_state)
         st.write({"query":query, "_": _, "embeddings": embeddings_path, **app_state})
 
