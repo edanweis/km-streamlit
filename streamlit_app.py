@@ -66,7 +66,7 @@ def db():
     return firestore.client()
 
 
-@st.cache(show_spinner=False, hash_funcs={firebase_admin.App: id, "_thread.RLock": lambda _: None})
+@st.cache(suppress_st_warning=True, show_spinner=False, hash_funcs={firebase_admin.App: id, "_thread.RLock": lambda _: None})
 def firebaseCallback(d):
     app_state = get_app_state()
     if app_state.get('oid', False):
