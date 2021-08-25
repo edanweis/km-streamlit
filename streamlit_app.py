@@ -34,25 +34,27 @@ def build(key):
     status_text.text('Mounting S3 file system')
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
-    # status_text.text('Copying embeddings')
     if not os.path.isdir(key):
+        status_text.text('Fetching embeddings')
         os.makedirs(os.path.dirname(f"./{key}"), exist_ok=True)
         fs.get(f"s3://aspect-km/{key}/embeddings", f"./{key}/embeddings")
         fs.get(f"s3://aspect-km/{key}/config", f"./{key}/config")
 
     progress_bar.progress(60)
-        
     embeddings = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
+    status_text.text('Loading embeddings')        
     embeddings.load(key)
 
     progress_bar.progress(80)
     
     embeddings.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
+    status_text.text('Loading multilingual embeddings')
     embeddings.model = embeddings.loadVectors()
 
+    status_text.text('Done')
     progress_bar.progress(100)
     progress_bar.empty()
-    status_text.text('')
+    status_text = st.empty()
     doSuccess()
     return embeddings
 
@@ -96,10 +98,12 @@ def generate_presigned_url(object_key, bucket_name='aspect-km', expiry=3600):
         
 
 def app():
+    st.set_page_config(layout="wide")
     hide_menu_style = """
             <style>
                 html {overflow: hidden !important;}
                 .css-1y0tads {padding-top: 0rem;}
+                .css-glyadz {height: auto !important; margin-bottom: 0 !important}
                 body {background: transparent !important;}
                 section {align-items: start;}
                 .stTextInput input {background: white;}
@@ -122,14 +126,12 @@ def app():
 
     if query:
         cols = st.columns(l)
-        # cols[0].write()
         results = embeddings.search(query, l)
-        for i, result in enumerate(results):
-            index, _ = result
-            st.write(index)
-            image = generate_presigned_url(f"precedent-images/{Path(index).name}")
-            # st.image(image)
-            cols[i].image(image)
+        # for i, result in enumerate(results):
+        #     index, _ = result
+        #     st.write(index)
+        #     image = generate_presigned_url(f"precedent-images/{Path(index).name}")
+        #     cols[i].image(image)
         firebaseCallback({'results': [{"filepath": k, "score": v, "url": generate_presigned_url(f"precedent-images/{Path(k).name}") } for k,v in results], 'query': query})
         st.write({"query":query, "_": _, "embeddings": embeddings_path, **app_state})
 
