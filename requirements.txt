@@ -1,8 +1,4 @@
 streamlit
 txtai[similarity]
-torchvision
 s3fs
 firebase-admin
-aiobotocore
-botocore
-boto3
