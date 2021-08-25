@@ -18,21 +18,21 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 
 import s3fs
+from google.cloud import secretmanager
+from google.oauth2 import service_account
 
 if not firebase_admin._apps:
-    # cred = credentials.Certificate('./aspect-km-4e35c3950fe3.json')
-    firebase_admin.initialize_app({
-          "type": "service_account",
-          "project_id": "aspect-km",
-          "private_key_id": st.secrets['private_key_id'],
-          "private_key": st.secrets['private_key'],
-          "client_email": "indd-417@aspect-km.iam.gserviceaccount.com",
-          "client_id": "105210967099409135216",
-          "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-          "token_uri": "https://oauth2.googleapis.com/token",
-          "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-          "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/indd-417%40aspect-km.iam.gserviceaccount.com"
-        })
+    # Create credentials object then initialize the firebase admin client
+    sec_client = secretmanager.SecretManagerServiceClient()
+    name = sec_client.secret_version_path('707318120192', 'firebase-adminsdk', "latest")
+    response = sec_client.access_secret_version(name)
+    service_account_info = json.loads(response.payload.data.decode('utf-8'))
+    # build credentials with the service account dict
+    creds = firebase_admin.credentials.Certificate(service_account_info)
+
+    # initialize firebase admin
+    firebase_app = firebase_admin.initialize_app(creds)
+
     db = firestore.client()
 
 
@@ -48,19 +48,15 @@ def doSuccess():
 @st.cache(allow_output_mutation=True, hash_funcs={firebase_admin.App: id})
 def db():
     if not firebase_admin._apps:
-        cred = credentials.Certificate(st.secrets["googleserviceaccount"])
-        firebase_admin.initialize_app({
-          "type": "service_account",
-          "project_id": "aspect-km",
-          "private_key_id": st.secrets['private_key_id'],
-          "private_key": st.secrets['private_key'],
-          "client_email": "indd-417@aspect-km.iam.gserviceaccount.com",
-          "client_id": "105210967099409135216",
-          "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-          "token_uri": "https://oauth2.googleapis.com/token",
-          "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-          "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/indd-417%40aspect-km.iam.gserviceaccount.com"
-        })
+        # Create credentials object then initialize the firebase admin client
+        sec_client = secretmanager.SecretManagerServiceClient()
+        name = sec_client.secret_version_path('707318120192', 'firebase-adminsdk', "latest")
+        response = sec_client.access_secret_version(name)
+        service_account_info = json.loads(response.payload.data.decode('utf-8'))
+        # build credentials with the service account dict
+        creds = firebase_admin.credentials.Certificate(service_account_info)
+
+        firebase_admin.initialize_app(creds)
     return firestore.client()
 
 
