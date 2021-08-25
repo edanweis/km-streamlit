@@ -102,6 +102,7 @@ def app():
     hide_menu_style = """
             <style>
                 .css-1e5imcs, .e1tzin5v1 {margin: 0 !important;}
+                .notification {margin-top: 60px !important;}
                 .stTextInput {position: absolute !important;}
                 #root > div:nth-child(1) {color: transparent !important}
                 html {overflow: hidden !important;}
@@ -128,7 +129,7 @@ def app():
     l = app_state.get('limit',10)
 
     if query:
-        cols = st.columns(l)
+        # cols = st.columns(l)
         results = embeddings.search(query, l)
         # for i, result in enumerate(results):
         #     index, _ = result
