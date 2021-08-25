@@ -19,14 +19,14 @@ if not firebase_admin._apps:
     db = firestore.client()
 
 
-@st.cache(suppress_st_warning=True)
+@st.cache(show_spinner=False, suppress_st_warning=True)
 def doSuccess():
     placeholder = st.empty()
     with placeholder.container():
         placeholder.success('Ready')
         placeholder.empty()
 
-@st.cache(hash_funcs={"_thread.RLock": lambda _: None}, allow_output_mutation=True, suppress_st_warning=True)
+@st.cache(show_spinner=False, hash_funcs={"_thread.RLock": lambda _: None}, allow_output_mutation=True, suppress_st_warning=True)
 def build(key):
     # status_text = st.empty()
     progress_bar = st.progress(0) 
@@ -58,7 +58,7 @@ def build(key):
     doSuccess()
     return embeddings
 
-@st.cache(allow_output_mutation=True, hash_funcs={"_thread.RLock": lambda _: None, firebase_admin.App: id})
+@st.cache(show_spinner=False, allow_output_mutation=True, hash_funcs={"_thread.RLock": lambda _: None, firebase_admin.App: id})
 def db():
     if not firebase_admin._apps:
         creds = firebase_admin.credentials.Certificate(st.secrets["googleserviceaccount"])
@@ -66,7 +66,7 @@ def db():
     return firestore.client()
 
 
-@st.cache(hash_funcs={firebase_admin.App: id, "_thread.RLock": lambda _: None})
+@st.cache(show_spinner=False, hash_funcs={firebase_admin.App: id, "_thread.RLock": lambda _: None})
 def firebaseCallback(d):
     app_state = get_app_state()
     if app_state.get('oid', False):
@@ -83,7 +83,7 @@ def get_app_state():
     app_state = {k: v[0] if isinstance(v, list) else v for k, v in app_state.items()}
     return app_state
 
-@st.cache(hash_funcs={"_thread.RLock": lambda _: None}, allow_output_mutation=True)
+@st.cache(show_spinner=False, hash_funcs={"_thread.RLock": lambda _: None}, allow_output_mutation=True)
 def generate_presigned_url(object_key, bucket_name='aspect-km', expiry=3600):
     client = boto3.client("s3",region_name='ap-southeast-2',
                           aws_secret_access_key=st.secrets["aws_secret_access_key"],
