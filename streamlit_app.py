@@ -72,10 +72,13 @@ def firebaseCallback(results, app_state):
         doc_ref.set({
             u'results': results
         }, merge=True)
+    else:
+        st.warning('Oops, are you running this outside of ASPECT Knowledge Platform?')
 
 def get_app_state():
     app_state = st.experimental_get_query_params()
     app_state = {k: v[0] if isinstance(v, list) else v for k, v in app_state.items()}
+    st.write(app_state)
     return app_state
 
 @st.cache(hash_funcs={"_thread.RLock": lambda _: None}, allow_output_mutation=True)
@@ -120,6 +123,7 @@ def app():
             index, _ = result
             st.write(index)
             st.image(generate_presigned_url(f"precedent-images/{Path(index).name}"))
+            firebaseCallback({"index": index.info()['name'], "query":query, "_": _, "s": app_state.get('s', {}), "embeddings": embeddings_path }, app_state)
 
 if __name__ == "__main__":
     app()
