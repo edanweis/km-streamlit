@@ -61,7 +61,7 @@ def db():
         creds = firebase_admin.credentials.Certificate(st.secrets["googleserviceaccount"])
         firebase_app = firebase_admin.initialize_app(creds)
         db = firestore.client()
-    return db
+        return db
 
 
 @st.cache(hash_funcs={firebase_admin.App: id, "_thread.RLock": lambda _: None})
@@ -78,7 +78,6 @@ def firebaseCallback(results, app_state):
 def get_app_state():
     app_state = st.experimental_get_query_params()
     app_state = {k: v[0] if isinstance(v, list) else v for k, v in app_state.items()}
-    st.write(app_state)
     return app_state
 
 @st.cache(hash_funcs={"_thread.RLock": lambda _: None}, allow_output_mutation=True)
@@ -119,11 +118,14 @@ def app():
     query = st.text_input("")
 
     if query:
+        cols = st.beta_columns(5)
+        cols[0].write()
         for result in embeddings.search(query, 10):
             index, _ = result
             st.write(index)
             st.image(generate_presigned_url(f"precedent-images/{Path(index).name}"))
         firebaseCallback({"query":query, "_": _, "s": app_state.get('s', {}), "embeddings": embeddings_path }, app_state)
+        st.write({"query":query, "_": _, "embeddings": embeddings_path, **app_state})
 
 if __name__ == "__main__":
     app()
