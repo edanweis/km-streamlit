@@ -102,7 +102,7 @@ def app():
     hide_menu_style = """
             <style>
                 .css-1e5imcs, .e1tzin5v1 {margin: 0 !important;}
-                .notification {margin-top: 60px !important;}
+                [data-baseweb="notification"] {margin-top: 60px !important;}
                 .stTextInput {position: absolute !important;}
                 #root > div:nth-child(1) {color: transparent !important}
                 html {overflow: hidden !important;}
