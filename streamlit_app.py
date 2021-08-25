@@ -55,7 +55,7 @@ def build(key):
     doSuccess()
     return embeddings
 
-@st.cache(allow_output_mutation=True, hash_funcs={firebase_admin.App: id})
+@st.cache(allow_output_mutation=True, hash_funcs={"_thread.RLock": lambda _: None, firebase_admin.App: id})
 def db():
     if not firebase_admin._apps:
         creds = firebase_admin.credentials.Certificate(st.secrets["googleserviceaccount"])
