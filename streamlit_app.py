@@ -52,7 +52,7 @@ def build(key):
         fs.get(f"s3://aspect-km/{directory}/config", f"./{directory}/config")
 
     progress_bar.progress(60)
-        
+
     embeddings = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
     embeddings.load(directory)
 
@@ -104,8 +104,8 @@ def generate_presigned_url(object_key, bucket_name='aspect-km', expiry=3600):
         
 
 def app():
-    embeddings_path = 'precedent-images-textai'
-    embeddings = build(embeddings_path)
+    # embeddings_path = 'precedent-images-textai'
+    # embeddings = build(embeddings_path)
     hide_menu_style = """
             <style>
                 html {overflow: hidden !important;}
@@ -119,17 +119,18 @@ def app():
                 footer {visibility: hidden;}
             </style>
             """
-    st.markdown(hide_menu_style, unsafe_allow_html=True)
+    # st.markdown(hide_menu_style, unsafe_allow_html=True)
     # see https://pmbaumgartner.github.io/streamlitopedia/essentials.html
     app_state = get_app_state()
+    firebaseCallback({"test": 'adsf'}, {"s": app_state})
 
-    query = st.text_input("")
+    # query = st.text_input("")
 
-    if query:
-        for result in embeddings.search(query, 10):
-            index, _ = result
-            st.write(index)
-            st.image(generate_presigned_url(f"precedent-images/{Path(index).name}"))
+    # if query:
+    #     for result in embeddings.search(query, 10):
+    #         index, _ = result
+    #         st.write(index)
+    #         st.image(generate_presigned_url(f"precedent-images/{Path(index).name}"))
 
 if __name__ == "__main__":
     app()
