@@ -30,20 +30,20 @@ def doSuccess():
 def build(key):
     status_text = st.empty()
     progress_bar = st.progress(0) 
-    directory = f'{key}-multilingual-embedding'
+    
     status_text.text('Mounting S3 file system')
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
     # status_text.text('Copying embeddings')
-    if not os.path.isdir(directory):
-        os.makedirs(os.path.dirname(f"./{directory}"), exist_ok=True)
-        fs.get(f"s3://aspect-km/{directory}/embeddings", f"./{directory}/embeddings")
-        fs.get(f"s3://aspect-km/{directory}/config", f"./{directory}/config")
+    if not os.path.isdir(key):
+        os.makedirs(os.path.dirname(f"./{key}"), exist_ok=True)
+        fs.get(f"s3://aspect-km/{key}/embeddings", f"./{key}/embeddings")
+        fs.get(f"s3://aspect-km/{key}/config", f"./{key}/config")
 
     progress_bar.progress(60)
         
     embeddings = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
-    embeddings.load(directory)
+    embeddings.load(key)
 
     progress_bar.progress(80)
     
@@ -65,12 +65,13 @@ def db():
 
 
 @st.cache(hash_funcs={firebase_admin.App: id, "_thread.RLock": lambda _: None})
-def firebaseCallback(results, app_state):
+def firebaseCallback(d):
     app_state = get_app_state()
-    if app_state.get('s', False):
-        doc_ref = db().collection(u'streamlit').document(app_state.get('s', 'missing-s-query-param-from-streamlit'))
+    if app_state.get('oid', False):
+        doc_ref = db().collection(u'streamlit').document(app_state.get('oid', 'missing-s-query-param-from-streamlit'))
         doc_ref.set({
-            u'results': results
+            u'results': d['results'], 
+            u'query': d['query'].
         }, merge=True)
     else:
         st.warning('Oops, are you running this outside of ASPECT Knowledge Platform?')
@@ -95,7 +96,7 @@ def generate_presigned_url(object_key, bucket_name='aspect-km', expiry=3600):
         
 
 def app():
-    embeddings_path = 'precedent-images-textai'
+    embeddings_path = app_state.get('key', 'precedent-images-textai-multilingual-embedding')
     embeddings = build(embeddings_path)
     hide_menu_style = """
             <style>
@@ -117,18 +118,19 @@ def app():
 
     query = st.text_input("")
 
+    l = app_state.get('limit',10)
+
     if query:
-        cols = st.columns(10)
-        cols[0].write()
-        results = embeddings.search(query, 10)
+        cols = st.columns(l)
+        # cols[0].write()
+        results = embeddings.search(query, l)
         for i, result in enumerate(results):
             index, _ = result
             st.write(index)
             image = generate_presigned_url(f"precedent-images/{Path(index).name}")
-            st.image(image)
-            cols[i].write(image)
-        firebaseCallback([{"filepath": k, "score": v, "url": generate_presigned_url(f"precedent-images/{Path(k).name}") } for k,v in results]
-, app_state)
+            # st.image(image)
+            cols[i].image(image)
+        firebaseCallback({'results': [{"filepath": k, "score": v, "url": generate_presigned_url(f"precedent-images/{Path(k).name}") } for k,v in results], 'query': query})
         st.write({"query":query, "_": _, "embeddings": embeddings_path, **app_state})
 
 if __name__ == "__main__":
