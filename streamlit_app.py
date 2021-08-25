@@ -123,7 +123,7 @@ def app():
             index, _ = result
             st.write(index)
             st.image(generate_presigned_url(f"precedent-images/{Path(index).name}"))
-            firebaseCallback({"index": index.info()['name'], "query":query, "_": _, "s": app_state.get('s', {}), "embeddings": embeddings_path }, app_state)
+        firebaseCallback({"query":query, "_": _, "s": app_state.get('s', {}), "embeddings": embeddings_path }, app_state)
 
 if __name__ == "__main__":
     app()
