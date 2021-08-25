@@ -71,7 +71,7 @@ def firebaseCallback(d):
         doc_ref = db().collection(u'streamlit').document(app_state.get('oid', 'missing-s-query-param-from-streamlit'))
         doc_ref.set({
             u'results': d['results'], 
-            u'query': d['query'].
+            u'query': d['query']
         }, merge=True)
     else:
         st.warning('Oops, are you running this outside of ASPECT Knowledge Platform?')
