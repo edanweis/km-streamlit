@@ -118,13 +118,15 @@ def app():
     query = st.text_input("")
 
     if query:
-        cols = st.beta_columns(5)
+        cols = st.columns(10)
         cols[0].write()
         results = embeddings.search(query, 10)
-        for result in results:
+        for i, result in enumerate(results):
             index, _ = result
             st.write(index)
-            st.image(generate_presigned_url(f"precedent-images/{Path(index).name}"))
+            image = generate_presigned_url(f"precedent-images/{Path(index).name}")
+            st.image(image)
+            cols[i].write(image)
         firebaseCallback([{"filepath": k, "score": v, "url": generate_presigned_url(f"precedent-images/{Path(k).name}") } for k,v in results]
 , app_state)
         st.write({"query":query, "_": _, "embeddings": embeddings_path, **app_state})
