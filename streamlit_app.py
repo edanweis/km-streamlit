@@ -64,7 +64,7 @@ def db():
     return db
 
 
-@st.cache(hash_funcs={firebase_admin.App: id})
+@st.cache(hash_funcs={firebase_admin.App: id, "_thread.RLock": lambda _: None})
 def firebaseCallback(results, app_state):
     app_state = get_app_state()
     if app_state.get('s', False):
