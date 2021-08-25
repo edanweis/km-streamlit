@@ -24,7 +24,7 @@ from google.oauth2 import service_account
 if not firebase_admin._apps:
     # Create credentials object then initialize the firebase admin client
     sec_client = secretmanager.SecretManagerServiceClient()
-    response = sec_client.access_secret_version(request={"name": "projects/707318120192/secrets/aspect-km-firebase-admin-service/versions/1"})
+    response = sec_client.access_secret_version(request={"name": "projects/707318120192/secrets/aspect-km-firebase-admin-service/versions/latest"})
     service_account_info = json.loads(response.payload.data.decode('utf-8'))
     # build credentials with the service account dict
     creds = firebase_admin.credentials.Certificate(service_account_info)
@@ -49,7 +49,7 @@ def db():
     if not firebase_admin._apps:
         # Create credentials object then initialize the firebase admin client
         sec_client = secretmanager.SecretManagerServiceClient()
-        response = sec_client.access_secret_version(request={"name": "projects/707318120192/secrets/aspect-km-firebase-admin-service/versions/1"})
+        response = sec_client.access_secret_version(request={"name": "projects/707318120192/secrets/aspect-km-firebase-admin-service/versions/latest"})
         service_account_info = json.loads(response.payload.data.decode('utf-8'))
         # build credentials with the service account dict
         creds = firebase_admin.credentials.Certificate(service_account_info)
