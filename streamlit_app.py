@@ -120,16 +120,16 @@ def app():
             """
     st.markdown(hide_menu_style, unsafe_allow_html=True)
     # see https://pmbaumgartner.github.io/streamlitopedia/essentials.html
-    app_state = get_app_state()
     embeddings_path = app_state.get('key', 'precedent-images-textai-multilingual-embedding')
     embeddings = build(embeddings_path)
 
     query = st.text_input("")
 
-    l = app_state.get('limit',10)
-    st.write(l)
+    # st.write(l)
 
     if query:
+        app_state = get_app_state()
+        l = app_state.get('limit',10)
         # cols = st.columns(l)
         results = embeddings.search(query, l)
         # for i, result in enumerate(results):
