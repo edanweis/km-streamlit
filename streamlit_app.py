@@ -60,8 +60,7 @@ def db():
     if not firebase_admin._apps:
         creds = firebase_admin.credentials.Certificate(st.secrets["googleserviceaccount"])
         firebase_app = firebase_admin.initialize_app(creds)
-        db = firestore.client()
-        return db
+    return firestore.client()
 
 
 @st.cache(hash_funcs={firebase_admin.App: id, "_thread.RLock": lambda _: None})
