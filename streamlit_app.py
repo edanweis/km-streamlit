@@ -127,6 +127,7 @@ def app():
     query = st.text_input("")
 
     l = app_state.get('limit',10)
+    st.write(l)
 
     if query:
         # cols = st.columns(l)
