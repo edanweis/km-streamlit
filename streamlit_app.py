@@ -11,6 +11,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import s3fs
 import boto3
+import itertools
 
 if not firebase_admin._apps:
     creds = firebase_admin.credentials.Certificate(st.secrets["googleserviceaccount"])
@@ -124,7 +125,8 @@ def app():
             index, _ = result
             st.write(index)
             st.image(generate_presigned_url(f"precedent-images/{Path(index).name}"))
-        firebaseCallback(results, app_state)
+        firebaseCallback(list(itertools.chain.from_iterable(results))
+, app_state)
         st.write({"query":query, "_": _, "embeddings": embeddings_path, **app_state})
 
 if __name__ == "__main__":
