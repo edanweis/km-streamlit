@@ -103,7 +103,7 @@ def app():
             <style>
                 .css-1e5imcs, .e1tzin5v1 {margin: 0 !important;}
                 [data-baseweb="notification"] {margin-top: 60px !important;}
-                .stTextInput {position: absolute !important;}
+                .stTextInput {position: absolute !important; z-index: 1 !important;}
                 #root > div:nth-child(1) {color: transparent !important}
                 html {overflow: hidden !important;}
                 .css-1y0tads {padding-top: 0rem;}
