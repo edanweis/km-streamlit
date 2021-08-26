@@ -28,6 +28,7 @@ def doSuccess():
 
 @st.cache(show_spinner=False, hash_funcs={"_thread.RLock": lambda _: None}, allow_output_mutation=True, suppress_st_warning=True)
 def build(key):
+    app_state = get_app_state()
     # status_text = st.empty()
     progress_bar = st.progress(0) 
     
@@ -46,10 +47,10 @@ def build(key):
     embeddings.load(key)
 
     progress_bar.progress(80)
-    
-    embeddings.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
+    if app_state.get('model', '') == 'multilingual':
+        embeddings.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
     # status_text.text('Loading multilingual embeddings')
-    embeddings.model = embeddings.loadVectors()
+        embeddings.model = embeddings.loadVectors()
 
     # status_text.text('Done')
     progress_bar.progress(100)
