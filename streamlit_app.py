@@ -104,6 +104,8 @@ def app():
     st.set_page_config(layout="wide")
     hide_menu_style = """
             <style>
+                .block-container {pointer-events: none;}
+                .stTextInput {pointer-events: all !important;}
                 .css-1e5imcs, .e1tzin5v1 {margin: 0 !important;}
                 a[class^="viewerBadge_container"] * {display: none !important; opacity: 0 !important}
                 [data-baseweb="notification"] {margin-top: 60px !important;}
