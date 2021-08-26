@@ -47,7 +47,7 @@ def build(key):
         fs.get(f"s3://aspect-km/{key}-multilingual-embedding/config", f"./{key}-multilingual-embedding/config")
 
     progress_bar.progress(60)
-    embeddings_english = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
+    embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
     embeddings_multilingual = embeddings_english
     # if app_state.get('model', '') != 'multilingual':
 
