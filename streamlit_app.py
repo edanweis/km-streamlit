@@ -154,7 +154,7 @@ def app():
                 footer {visibility: hidden;}
             </style>
             """
-    if not app_state.get('debug', False):
+    if app_state.get('debug', 'false').lower() != 'true':
         st.markdown(hide_menu_style, unsafe_allow_html=True)
     # see https://pmbaumgartner.github.io/streamlitopedia/essentials.html
     app_state = get_app_state()
