@@ -42,9 +42,11 @@ def build(key):
         fs.get(f"s3://aspect-km/{key}/config", f"./{key}/config")
 
     progress_bar.progress(60)
-    embeddings = Embeddings()
+    embeddings = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
     # if app_state.get('model', '') != 'multilingual':
     #     embeddings = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
+
+    
     # status_text.text('Loading embeddings')        
     embeddings.load(key)
 
