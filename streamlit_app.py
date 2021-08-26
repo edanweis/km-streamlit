@@ -39,12 +39,12 @@ def build(key):
         # status_text.text('Fetching embeddings')
         
         os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
-        fs.get(f"s3://aspect-km/{key}-embedding/embeddings", f"./{key}/embeddings")
-        fs.get(f"s3://aspect-km/{key}-embedding/config", f"./{key}/config")
+        fs.get(f"s3://aspect-km/{key}-embedding/embeddings", f"./{key}-embedding/embeddings")
+        fs.get(f"s3://aspect-km/{key}-embedding/config", f"./{key}-embedding/config")
         
         os.makedirs(os.path.dirname(f"./{key}-multilingual-embedding"), exist_ok=True)
-        fs.get(f"s3://aspect-km/{key}-multilingual-embedding/embeddings", f"./{key}/embeddings")
-        fs.get(f"s3://aspect-km/{key}-multilingual-embedding/config", f"./{key}/config")
+        fs.get(f"s3://aspect-km/{key}-multilingual-embedding/embeddings", f"./{key}-multilingual-embedding/embeddings")
+        fs.get(f"s3://aspect-km/{key}-multilingual-embedding/config", f"./{key}-multilingual-embedding/config")
 
     progress_bar.progress(60)
     embeddings_english = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
