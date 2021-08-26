@@ -38,9 +38,9 @@ def build(key):
     if (not os.path.isdir(f"{key}-embedding")) or (not os.path.isdir(f"{key}-multilingual-embedding")):
         # status_text.text('Fetching embeddings')
         
-        os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
-        fs.get(f"s3://aspect-km/{key}-embedding/embeddings", f"./{key}-embedding/embeddings")
-        fs.get(f"s3://aspect-km/{key}-embedding/config", f"./{key}-embedding/config")
+        # os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
+        # fs.get(f"s3://aspect-km/{key}-embedding/embeddings", f"./{key}-embedding/embeddings")
+        # fs.get(f"s3://aspect-km/{key}-embedding/config", f"./{key}-embedding/config")
         
         os.makedirs(os.path.dirname(f"./{key}-multilingual-embedding"), exist_ok=True)
         fs.get(f"s3://aspect-km/{key}-multilingual-embedding/embeddings", f"./{key}-multilingual-embedding/embeddings")
@@ -72,16 +72,15 @@ def build(key):
 
 
         
-    embeddings_multilingual = embeddings_english
-    # if app_state.get('model', '') != 'multilingual':
+    
+    
+    embeddings_english.load(f"{key}-multilingual-embedding") # contains the corrected config from txtai==3.0.0
+    
 
-    
-    # status_text.text('Loading embeddings')        
-    embeddings_english.load(f"{key}-embedding")
-    
-    embeddings_multilingual.load(f"{key}-multilingual-embedding")
-    embeddings_multilingual.model = embeddings_multilingual.loadVectors()
+    embeddings_multilingual = embeddings_english
+
     embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
+    embeddings_multilingual.model = embeddings_multilingual.loadVectors()
 
     progress_bar.progress(80)
     # else:
