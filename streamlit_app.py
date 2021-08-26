@@ -138,7 +138,8 @@ def app():
         #     st.write(index)
         #     image = generate_presigned_url(f"precedent-images/{Path(index).name}")
         #     cols[i].image(image)
-        firebaseCallback({'results': [{"filepath": k, "score": v, "url": generate_presigned_url(f"precedent-images/{Path(k).name}") } for k,v in results], 'query': query})
+
+        firebaseCallback({'results': [{"format": "".join([s for s in Path(k).suffixes if not " " in s]), "filepath": k, "score": v, "url": generate_presigned_url(f"precedent-images/{Path(k).name}") } for k,v in results], 'query': query})
         # st.write({"query":query, "_": _, "embeddings": embeddings_path, **app_state})
 
 if __name__ == "__main__":
