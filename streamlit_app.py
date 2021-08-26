@@ -154,10 +154,11 @@ def app():
                 footer {visibility: hidden;}
             </style>
             """
+    app_state = get_app_state()
+    
     if app_state.get('debug', 'false').lower() != 'true':
         st.markdown(hide_menu_style, unsafe_allow_html=True)
     # see https://pmbaumgartner.github.io/streamlitopedia/essentials.html
-    app_state = get_app_state()
     embeddings_path = app_state.get('key', 'precedent-images-textai')
     embeddings_english, embeddings_multilingual = build(embeddings_path)
 
