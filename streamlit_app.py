@@ -49,10 +49,11 @@ def build(key):
     progress_bar.progress(60)
     try:
         # embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
-        embeddings_english = Embeddings({"method": "transformers", "path": "clip-ViT-B-32"})
+        embeddings_english = Embeddings({"path": "clip-ViT-B-32"})
         # st.write({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
     except:
-        embeddings_english = Embeddings()
+        return
+        # embeddings_english = Embeddings()
         
     #     try: 
     #         embeddings_english = Embeddings({"method": "transformers", "path": "clip-ViT-B-32"})
