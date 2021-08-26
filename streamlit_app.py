@@ -84,7 +84,7 @@ def get_app_state():
     return app_state
 
 @st.cache(show_spinner=False, hash_funcs={"_thread.RLock": lambda _: None}, allow_output_mutation=True)
-def generate_presigned_url(object_key, bucket_name='aspect-km', expiry=3600):
+def generate_presigned_url(object_key, bucket_name='aspect-km', expiry=604800):
     client = boto3.client("s3",region_name='ap-southeast-2',
                           aws_secret_access_key=st.secrets["aws_secret_access_key"],
                           aws_access_key_id=st.secrets["aws_access_key_id"])
