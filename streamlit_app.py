@@ -49,8 +49,10 @@ def build(key):
     progress_bar.progress(80)
     if app_state.get('model', '') == 'multilingual':
         embeddings.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
+    else:
+        embeddings.config["path"] = 'sentence-transformers/clip-ViT-B-32'
     # status_text.text('Loading multilingual embeddings')
-        embeddings.model = embeddings.loadVectors()
+    embeddings.model = embeddings.loadVectors()
 
     # status_text.text('Done')
     progress_bar.progress(100)
