@@ -47,7 +47,27 @@ def build(key):
         fs.get(f"s3://aspect-km/{key}-multilingual-embedding/config", f"./{key}-multilingual-embedding/config")
 
     progress_bar.progress(60)
-    embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
+    try:
+        embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
+        st.write({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
+    except:
+        try: 
+            embeddings_english = Embeddings({"method": "transformers", "path": "clip-ViT-B-32"})
+            st.write({"method": "transformers", "path": "clip-ViT-B-32"})
+        except:
+            try: 
+                embeddings_english = Embeddings({"path": "sentence-transformers/clip-ViT-B-32"})
+                st.write({"path": "sentence-transformers/clip-ViT-B-32"})
+            except:
+                try:
+                    embeddings_english = Embeddings({"path": "clip-ViT-B-32"})
+                    st.write({"path": "clip-ViT-B-32"})
+                except:
+                    embeddings_english = Embeddings()
+                    st.write({"path": "clip-ViT-B-32"})
+
+
+        
     embeddings_multilingual = embeddings_english
     # if app_state.get('model', '') != 'multilingual':
 
@@ -56,7 +76,7 @@ def build(key):
     embeddings_english.load(f"{key}-embedding")
     
     embeddings_multilingual.load(f"{key}-multilingual-embedding")
-    embeddings_multilingual.model = embeddings.loadVectors()
+    embeddings_multilingual.model = embeddings_multilingual.loadVectors()
     embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
 
     progress_bar.progress(80)
@@ -134,7 +154,8 @@ def app():
                 footer {visibility: hidden;}
             </style>
             """
-    st.markdown(hide_menu_style, unsafe_allow_html=True)
+    if not app_state.get('debug', False):
+        st.markdown(hide_menu_style, unsafe_allow_html=True)
     # see https://pmbaumgartner.github.io/streamlitopedia/essentials.html
     app_state = get_app_state()
     embeddings_path = app_state.get('key', 'precedent-images-textai')
