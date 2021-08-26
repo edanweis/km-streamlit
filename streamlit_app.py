@@ -37,23 +37,29 @@ def build(key):
     progress_bar.progress(20)
     if not os.path.isdir(key):
         # status_text.text('Fetching embeddings')
-        os.makedirs(os.path.dirname(f"./{key}"), exist_ok=True)
-        fs.get(f"s3://aspect-km/{key}/embeddings", f"./{key}/embeddings")
-        fs.get(f"s3://aspect-km/{key}/config", f"./{key}/config")
+        
+        os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
+        fs.get(f"s3://aspect-km/{key}-embedding/embeddings", f"./{key}/embeddings")
+        fs.get(f"s3://aspect-km/{key}-embedding/config", f"./{key}/config")
+        
+        os.makedirs(os.path.dirname(f"./{key}-multilingual-embedding"), exist_ok=True)
+        fs.get(f"s3://aspect-km/{key}-multilingual-embedding/embeddings", f"./{key}/embeddings")
+        fs.get(f"s3://aspect-km/{key}-multilingual-embedding/config", f"./{key}/config")
 
     progress_bar.progress(60)
-    embeddings = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
+    embeddings_english = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
+    embeddings_multilingual = embeddings_english
     # if app_state.get('model', '') != 'multilingual':
-    #     embeddings = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
 
     
     # status_text.text('Loading embeddings')        
-    embeddings.load(key)
+    embeddings_english.load(f"{key}-embedding")
+    
+    embeddings_multilingual.load(f"{key}-multilingual-embedding")
+    embeddings_multilingual.model = embeddings.loadVectors()
+    embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
 
     progress_bar.progress(80)
-    if app_state.get('model', '') == 'multilingual':
-        embeddings.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
-        embeddings.model = embeddings.loadVectors()
     # else:
         # embeddings.config["path"] = 'sentence-transformers/clip-ViT-B-32'
     # status_text.text('Loading multilingual embeddings')
@@ -63,7 +69,7 @@ def build(key):
     progress_bar.empty()
     # status_text = st.empty()
     doSuccess()
-    return embeddings
+    return (embeddings_english, embeddings_multilingual)
 
 @st.cache(show_spinner=False, allow_output_mutation=True, hash_funcs={"_thread.RLock": lambda _: None, firebase_admin.App: id})
 def db():
@@ -131,8 +137,8 @@ def app():
     st.markdown(hide_menu_style, unsafe_allow_html=True)
     # see https://pmbaumgartner.github.io/streamlitopedia/essentials.html
     app_state = get_app_state()
-    embeddings_path = app_state.get('key', 'precedent-images-textai-multilingual-embedding')
-    embeddings = build(embeddings_path)
+    embeddings_path = app_state.get('key', 'precedent-images-textai')
+    embeddings_english, embeddings_multilingual = build(embeddings_path)
 
     query = st.text_input("")
 
@@ -140,8 +146,10 @@ def app():
     if query:
         # cols = st.columns(l)
         l = int(app_state.get('limit',10))
-
-        results = embeddings.search(query, l)
+        if app_state.get('model', '') == 'multilingual':
+            results = embeddings_multilingual.search(query, l)
+        else:
+            results = embeddings_english.search(query, l)
         # for i, result in enumerate(results):
         #     index, _ = result
         #     st.write(index)
