@@ -35,7 +35,7 @@ def build(key):
     # status_text.text('Mounting S3 file system')
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
-    if not os.path.isdir(key):
+    if (not os.path.isdir(f"{key}-embedding")) or (not os.path.isdir(f"{key}-multilingual-embedding")):
         # status_text.text('Fetching embeddings')
         
         os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
@@ -155,7 +155,7 @@ def app():
             </style>
             """
     app_state = get_app_state()
-    
+
     if app_state.get('debug', 'false').lower() != 'true':
         st.markdown(hide_menu_style, unsafe_allow_html=True)
     # see https://pmbaumgartner.github.io/streamlitopedia/essentials.html
