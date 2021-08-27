@@ -12,6 +12,7 @@ from firebase_admin import firestore
 import s3fs
 import boto3
 import itertools
+from copy import deepcopy
 
 if not firebase_admin._apps:
     creds = firebase_admin.credentials.Certificate(st.secrets["googleserviceaccount"])
@@ -57,14 +58,12 @@ def build(key):
     # st.write({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
 
     
-    embeddings_multilingual = embeddings_english
+    embeddings_multilingual = deepcopy(embeddings_english)
+
+    embeddings_multilingual.config["method"] = "sentence-transformers"
+    embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
+    embeddings_multilingual.model = embeddings_multilingual.loadVectors()
     
-    try:
-        embeddings_multilingual.config["method"] = "sentence-transformers"
-        embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
-        embeddings_multilingual.model = embeddings_multilingual.loadVectors()
-    except:
-        st.write('could not load embeddings', os.path.isdir(f"./{key}-multilingual-embedding"))
         
     
     progress_bar.progress(80)
