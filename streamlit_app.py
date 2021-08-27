@@ -55,7 +55,7 @@ def build(key):
     progress_bar.progress(60)
 
     # embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
-    embeddings_english = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
+    embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
     # embeddings_english = Embeddings()
     embeddings_english.load(embeddings_dir) # contains the corrected config from txtai==3.0.0
     # embeddings_english.config["method"] = "sentence-transformers"
