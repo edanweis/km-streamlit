@@ -64,8 +64,7 @@ def build(key):
     
     embeddings_multilingual = deepcopy(embeddings_english)
 
-    embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
-    embeddings_multilingual.model = embeddings_multilingual.loadVectors()
+    
     
         
     
@@ -159,8 +158,12 @@ def app():
         # cols = st.columns(l)
         l = int(app_state.get('limit',10))
         if app_state.get('model', '') == 'multilingual':
-            results = embeddings_multilingual.search(query, l)
+            embeddings_english.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
+            embeddings_english.model = embeddings_english.loadVectors()
+            results = embeddings_english.search(query, l)
         else:
+            embeddings_english.config["path"] = "sentence-transformers/clip-ViT-B-32"
+            embeddings_english.model = embeddings_english.loadVectors()
             results = embeddings_english.search(query, l)
         # for i, result in enumerate(results):
         #     index, _ = result
