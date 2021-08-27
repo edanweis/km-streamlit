@@ -36,49 +36,30 @@ def build(key):
     # status_text.text('Mounting S3 file system')
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
-    # if (not os.path.isdir(f"{key}-embedding")) or (not os.path.isdir(f"{key}-multilingual-embedding")):
-    # if not os.path.isdir(f"./{key}-multilingual-embedding"):
-        # status_text.text('Fetching embeddings')
-        
-        # os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
-        # fs.get(f"s3://aspect-km/{key}-embedding/embeddings", f"./{key}-embedding/embeddings")
-        # fs.get(f"s3://aspect-km/{key}-embedding/config", f"./{key}-embedding/config")
-        
+
     embeddings_dir = f"{key}-multilingual-embedding"
     
     Path(embeddings_dir).mkdir(parents=True, exist_ok=True)
-    # os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
     
     fs.get(f"s3://aspect-km/{embeddings_dir}/embeddings", f"./{embeddings_dir}/embeddings")
     fs.get(f"s3://aspect-km/{embeddings_dir}/config", f"./{embeddings_dir}/config")
 
     progress_bar.progress(60)
 
-    # embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
     embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
-    # embeddings_english = Embeddings()
+    
     embeddings_english.load(embeddings_dir) # contains the corrected config from txtai==3.0.0
-    # embeddings_english.config["method"] = "sentence-transformers"
-    # st.write({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
+    
+    # embeddings_multilingual = deepcopy(embeddings_english)
 
+    # embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
+    # embeddings_multilingual.model = embeddings_multilingual.loadVectors()
     
-    embeddings_multilingual = deepcopy(embeddings_english)
-
-    
-    
-        
-    
-    progress_bar.progress(80)
-    # else:
-        # embeddings.config["path"] = 'sentence-transformers/clip-ViT-B-32'
-    # status_text.text('Loading multilingual embeddings')
-
-    # status_text.text('Done')
     progress_bar.progress(100)
     progress_bar.empty()
     # status_text = st.empty()
     doSuccess()
-    return (embeddings_english, embeddings_multilingual)
+    return embeddings_english
 
 @st.cache(show_spinner=False, allow_output_mutation=True, hash_funcs={"_thread.RLock": lambda _: None, firebase_admin.App: id})
 def db():
@@ -149,7 +130,7 @@ def app():
         st.markdown(hide_menu_style, unsafe_allow_html=True)
     # see https://pmbaumgartner.github.io/streamlitopedia/essentials.html
     embeddings_path = app_state.get('key', 'precedent-images-textai')
-    embeddings_english, embeddings_multilingual = build(embeddings_path)
+    embeddings_english = build(embeddings_path)
 
     query = st.text_input("")
 
@@ -157,21 +138,14 @@ def app():
     if query:
         # cols = st.columns(l)
         l = int(app_state.get('limit',10))
-        if app_state.get('model', '') == 'multilingual':
-            embeddings_english.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
-            embeddings_english.model = embeddings_english.loadVectors()
-            results = embeddings_english.search(query, l)
-        else:
-            embeddings_english.config["path"] = "sentence-transformers/clip-ViT-B-32"
-            embeddings_english.model = embeddings_english.loadVectors()
-            results = embeddings_english.search(query, l)
+        results = embeddings_english.search(query, l)
         # for i, result in enumerate(results):
         #     index, _ = result
         #     st.write(index)
         #     image = generate_presigned_url(f"precedent-images/{Path(index).name}")
         #     cols[i].image(image)
 
-        firebaseCallback({'results': [{"format": "".join([s.lower() for s in Path(k).suffixes if not " " in s]), "filepath": k, "score": v, "url": generate_presigned_url(f"precedent-images/{Path(k).name}"), "thumbnail": generate_presigned_url(f"precedent-images-300/{Path(k).stem}.jpg") } for k,v in results], 'query': query})
+        firebaseCallback({'model_path': 'sentence-transformers/clip-ViT-B-32', 'results': [{"format": "".join([s.lower() for s in Path(k).suffixes if not " " in s]), "filepath": k, "score": v, "url": generate_presigned_url(f"precedent-images/{Path(k).name}"), "thumbnail": generate_presigned_url(f"precedent-images-300/{Path(k).stem}.jpg") } for k,v in results], 'query': query})
         # st.write({"query":query, "_": _, "embeddings": embeddings_path, **app_state})
 
 if __name__ == "__main__":
