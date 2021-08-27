@@ -48,15 +48,14 @@ def build(key):
         fs.get(f"s3://aspect-km/{key}-multilingual-embedding/config", f"./{key}-multilingual-embedding/config")
 
     progress_bar.progress(60)
-    try:
-        # embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
-        embeddings_english = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
-        embeddings_english.load(f"./{key}-multilingual-embedding") # contains the corrected config from txtai==3.0.0
-        embeddings_english.config["method"] = "sentence-transformers"
-        # st.write({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
-    except:
-        st.write('could not load english embeddings')
-        return
+
+    # embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
+    # embeddings_english = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
+    embeddings_english = Embeddings()
+    embeddings_english.load(f"./{key}-multilingual-embedding") # contains the corrected config from txtai==3.0.0
+    # embeddings_english.config["method"] = "sentence-transformers"
+    # st.write({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
+
     
     embeddings_multilingual = embeddings_english
     
