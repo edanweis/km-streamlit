@@ -36,7 +36,7 @@ def build(key):
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
     # if (not os.path.isdir(f"{key}-embedding")) or (not os.path.isdir(f"{key}-multilingual-embedding")):
-    if not os.path.isdir(f"{key}-multilingual-embedding"):
+    if not os.path.isdir(f"./{key}-multilingual-embedding"):
         # status_text.text('Fetching embeddings')
         
         # os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
@@ -64,7 +64,7 @@ def build(key):
         embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
         embeddings_multilingual.model = embeddings_multilingual.loadVectors()
     except:
-        st.write('could not load embeddings', os.path.isdir(f"{key}-multilingual-embedding"))
+        st.write('could not load embeddings', os.path.isdir(f"./{key}-multilingual-embedding"))
         
     
     progress_bar.progress(80)
