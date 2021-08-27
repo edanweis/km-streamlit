@@ -44,7 +44,7 @@ def build(key):
         # fs.get(f"s3://aspect-km/{key}-embedding/embeddings", f"./{key}-embedding/embeddings")
         # fs.get(f"s3://aspect-km/{key}-embedding/config", f"./{key}-embedding/config")
         
-    embeddings_dir = f"./{key}-multilingual-embedding"
+    embeddings_dir = f"{key}-multilingual-embedding"
     
     Path(embeddings_dir).mkdir(parents=True, exist_ok=True)
     # os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
@@ -57,7 +57,7 @@ def build(key):
     # embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
     # embeddings_english = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
     embeddings_english = Embeddings()
-    embeddings_english.load(embeddings_dir) # contains the corrected config from txtai==3.0.0
+    embeddings_english.load(f"./{embeddings_dir}") # contains the corrected config from txtai==3.0.0
     # embeddings_english.config["method"] = "sentence-transformers"
     # st.write({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
 
