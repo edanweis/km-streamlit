@@ -64,9 +64,9 @@ def build(key):
     
     embeddings_multilingual = deepcopy(embeddings_english)
 
-    embeddings_multilingual.config["method"] = "sentence-transformers"
-    embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
-    embeddings_multilingual.model = embeddings_multilingual.loadVectors()
+    # embeddings_multilingual.config["method"] = "sentence-transformers"
+    # embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
+    # embeddings_multilingual.model = embeddings_multilingual.loadVectors()
     
         
     
