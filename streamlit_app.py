@@ -36,55 +36,37 @@ def build(key):
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
     # if (not os.path.isdir(f"{key}-embedding")) or (not os.path.isdir(f"{key}-multilingual-embedding")):
-    if not os.path.isdir(f"{key}-multilingual-embedding"):
+    if not os.path.isdir(f"{key}-embedding"):
         # status_text.text('Fetching embeddings')
         
         # os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
         # fs.get(f"s3://aspect-km/{key}-embedding/embeddings", f"./{key}-embedding/embeddings")
         # fs.get(f"s3://aspect-km/{key}-embedding/config", f"./{key}-embedding/config")
         
-        os.makedirs(os.path.dirname(f"./{key}-multilingual-embedding"), exist_ok=True)
-        fs.get(f"s3://aspect-km/{key}-multilingual-embedding/embeddings", f"./{key}-multilingual-embedding/embeddings")
-        fs.get(f"s3://aspect-km/{key}-multilingual-embedding/config", f"./{key}-multilingual-embedding/config")
+        os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
+        fs.get(f"s3://aspect-km/{key}-embedding/embeddings", f"./{key}-embedding/embeddings")
+        fs.get(f"s3://aspect-km/{key}-embedding/config", f"./{key}-embedding/config")
 
     progress_bar.progress(60)
     try:
         # embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
         embeddings_english = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
-        embeddings_english.load(f"./{key}-multilingual-embedding") # contains the corrected config from txtai==3.0.0
+        embeddings_english.load(f"./{key}-embedding") # contains the corrected config from txtai==3.0.0
+        embeddings_english.config["method"] = "sentence-transformers"
         # st.write({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
     except:
-        st.write('could not load embeddings', os.path.isdir(f"{key}-multilingual-embedding"))
+        st.write('could not load english embeddings')
         return
-        # embeddings_english = Embeddings()
-        
-    #     try: 
-    #         embeddings_english = Embeddings({"method": "transformers", "path": "clip-ViT-B-32"})
-    #         st.write({"method": "transformers", "path": "clip-ViT-B-32"})
-    #     except:
-    #         try: 
-    #             embeddings_english = Embeddings({"path": "sentence-transformers/clip-ViT-B-32"})
-    #             st.write({"path": "sentence-transformers/clip-ViT-B-32"})
-    #         except:
-    #             try:
-    #                 embeddings_english = Embeddings({"path": "clip-ViT-B-32"})
-    #                 st.write({"path": "clip-ViT-B-32"})
-    #             except:
-    #                 embeddings_english = Embeddings()
-    #                 st.write({"path": "clip-ViT-B-32"})
-
-
-        
     
-    
-    
+    embeddings_multilingual = embeddings_english
     
     try:
-        embeddings_multilingual = embeddings_english
+        embeddings_multilingual.config["method"] = "sentence-transformers"
         embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
         embeddings_multilingual.model = embeddings_multilingual.loadVectors()
     except:
-        st.write('could not load multilingual embeddings.')
+        st.write('could not load embeddings', os.path.isdir(f"{key}-multilingual-embedding"))
+        
     
     progress_bar.progress(80)
     # else:
