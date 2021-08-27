@@ -37,16 +37,18 @@ def build(key):
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
     # if (not os.path.isdir(f"{key}-embedding")) or (not os.path.isdir(f"{key}-multilingual-embedding")):
-    if not os.path.isdir(f"./{key}-multilingual-embedding"):
+    # if not os.path.isdir(f"./{key}-multilingual-embedding"):
         # status_text.text('Fetching embeddings')
         
         # os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
         # fs.get(f"s3://aspect-km/{key}-embedding/embeddings", f"./{key}-embedding/embeddings")
         # fs.get(f"s3://aspect-km/{key}-embedding/config", f"./{key}-embedding/config")
         
-        os.makedirs(os.path.dirname(f"./{key}-multilingual-embedding"), exist_ok=True)
-        fs.get(f"s3://aspect-km/{key}-multilingual-embedding/embeddings", f"./{key}-multilingual-embedding/embeddings")
-        fs.get(f"s3://aspect-km/{key}-multilingual-embedding/config", f"./{key}-multilingual-embedding/config")
+    os.makedirs(os.path.dirname(f"./{key}-multilingual-embedding"), exist_ok=True)
+    os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
+    
+    fs.get(f"s3://aspect-km/{key}-multilingual-embedding/embeddings", f"./{key}-multilingual-embedding/embeddings")
+    fs.get(f"s3://aspect-km/{key}-multilingual-embedding/config", f"./{key}-multilingual-embedding/config")
 
     progress_bar.progress(60)
 
