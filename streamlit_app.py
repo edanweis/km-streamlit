@@ -35,7 +35,8 @@ def build(key):
     # status_text.text('Mounting S3 file system')
     fs = s3fs.S3FileSystem(anon=False, key=st.secrets["aws_access_key_id"], secret=st.secrets["aws_secret_access_key"])
     progress_bar.progress(20)
-    if (not os.path.isdir(f"{key}-embedding")) or (not os.path.isdir(f"{key}-multilingual-embedding")):
+    # if (not os.path.isdir(f"{key}-embedding")) or (not os.path.isdir(f"{key}-multilingual-embedding")):
+    if not os.path.isdir(f"{key}-multilingual-embedding"):
         # status_text.text('Fetching embeddings')
         
         # os.makedirs(os.path.dirname(f"./{key}-embedding"), exist_ok=True)
@@ -49,9 +50,11 @@ def build(key):
     progress_bar.progress(60)
     try:
         # embeddings_english = Embeddings({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
-        embeddings_english = Embeddings({"path": "clip-ViT-B-32"})
+        embeddings_english = Embeddings({"method": "sentence-transformers", "path": "clip-ViT-B-32"})
+        embeddings_english.load(f"./{key}-multilingual-embedding") # contains the corrected config from txtai==3.0.0
         # st.write({"method": "sentence-transformers", "path": "sentence-transformers/clip-ViT-B-32"})
     except:
+        st.write('could not load embeddings', os.path.isdir(f"{key}-multilingual-embedding"))
         return
         # embeddings_english = Embeddings()
         
@@ -74,14 +77,15 @@ def build(key):
         
     
     
-    embeddings_english.load(f"{key}-multilingual-embedding") # contains the corrected config from txtai==3.0.0
     
-
-    embeddings_multilingual = embeddings_english
-
-    embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
-    embeddings_multilingual.model = embeddings_multilingual.loadVectors()
-
+    
+    try:
+        embeddings_multilingual = embeddings_english
+        embeddings_multilingual.config["path"] = 'sentence-transformers/clip-ViT-B-32-multilingual-v1'
+        embeddings_multilingual.model = embeddings_multilingual.loadVectors()
+    except:
+        st.write('could not load multilingual embeddings.')
+    
     progress_bar.progress(80)
     # else:
         # embeddings.config["path"] = 'sentence-transformers/clip-ViT-B-32'
