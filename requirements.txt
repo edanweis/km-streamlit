@@ -1,5 +1,5 @@
 streamlit
-git+git://github.com/neuml/txtai.git@a0ab014e96089d76c9cb4de1611dd34205a2d734#egg=txtai[similarity]
+git+git://github.com/edanweis/txtai.git#egg=txtai[similarity]
 torchvision
 s3fs
 firebase-admin
