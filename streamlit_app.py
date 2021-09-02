@@ -75,8 +75,9 @@ def firebaseCallback(d):
     if app_state.get('oid', False):
         doc_ref = db().collection(u'streamlit').document(app_state.get('oid', 'missing-s-query-param-from-streamlit'))
         doc_ref.set({
-            u'results': d['results'], 
-            u'query': d['query']
+            u'results': d.get('results', []), 
+            u'query': d.get('query', []),
+            u'loading': d.get('loading', False)
         }, merge=True)
     else:
         st.warning('Oops, are you running this outside of ASPECT Knowledge Platform?')
@@ -101,6 +102,7 @@ def generate_presigned_url(object_key, bucket_name='aspect-km', expiry=604800):
         
 
 def app():
+    firebaseCallback({"loading": True})
     st.set_page_config(layout="wide")
     hide_menu_style = """
             <style>
@@ -133,7 +135,7 @@ def app():
     embeddings_english = build(embeddings_path)
 
     query = st.text_input("")
-
+    firebaseCallback({"loading": False})
 
     if query:
         # cols = st.columns(l)
@@ -145,7 +147,7 @@ def app():
         #     image = generate_presigned_url(f"precedent-images/{Path(index).name}")
         #     cols[i].image(image)
 
-        firebaseCallback({'model_path': 'sentence-transformers/clip-ViT-B-32', 'results': [{"format": "".join([s.lower() for s in Path(k).suffixes if not " " in s]), "filepath": k, "score": v, "url": generate_presigned_url(f"precedent-images/{Path(k).name}"), "thumbnail": generate_presigned_url(f"precedent-images-300/{Path(k).stem}.jpg") } for k,v in results], 'query': query})
+        firebaseCallback({'model_path': 'sentence-transformers/clip-ViT-B-32', 'results': [{"format": "".join([s.lower() for s in Path(k).suffixes if not " " in s]), "filepath": k, "score": v, "url": generate_presigned_url(f"precedent-images/{Path(k).name}"), "thumbnail": generate_presigned_url(f"precedent-images-300/{Path(k).stem}.jpg") } for k,v in results], 'query': query, 'loading':False})
         # st.write({"query":query, "_": _, "embeddings": embeddings_path, **app_state})
 
 if __name__ == "__main__":
