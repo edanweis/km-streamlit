@@ -6,3 +6,4 @@ firebase-admin
 aiobotocore
 botocore
 boto3
+transformers
