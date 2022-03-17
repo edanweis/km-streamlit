@@ -1,5 +1,5 @@
 streamlit==0.87.0
-git+git://github.com/edanweis/txtai.git#egg=txtai[similarity]
+git+https://github.com/edanweis/txtai.git#egg=txtai[similarity]
 torchvision
 s3fs
 firebase-admin
